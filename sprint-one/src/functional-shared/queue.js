@@ -4,6 +4,7 @@ var Queue = function() {
   var someInstance = {};
   someInstance.storage = {};
   someInstance.length = 0;
+  someInstance.track = 0;
   _.extend(someInstance, queueMethods);
 
   return someInstance;
@@ -11,12 +12,17 @@ var Queue = function() {
 
 var queueMethods = {
   enqueue: function(value){
+    this.storage[this.track] = value;
     this.length++;
+    this.track++;
   },
   dequeue: function(){
     if (this.length > 0){
+      var result = this.storage[this.track - this.length];
+      delete this.storage[this.track - this.length];
       this.length--;
     }
+    return result;
   },
   size: function() {
     return this.length;    
