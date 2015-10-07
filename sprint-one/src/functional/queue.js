@@ -1,4 +1,5 @@
 var Queue = function() {
+  //FIFO
   var someInstance = {};
 
   // Use an object with numeric keys to store values
@@ -9,6 +10,7 @@ var Queue = function() {
   // Implement the methods below
 
   someInstance.enqueue = function(value) {
+    length++;
   };
 
   someInstance.dequeue = function() {
