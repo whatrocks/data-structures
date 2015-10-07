@@ -13,10 +13,13 @@ var Stack = function() {
 var stackMethods = {
 
   push: function(value) {
-
+    this.length++;
   },
 
   pop: function() {
+    if ( this.length > 0 ) {
+      this.length--;
+    }
 
   },
 
