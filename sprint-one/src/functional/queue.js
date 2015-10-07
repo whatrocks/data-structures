@@ -14,6 +14,9 @@ var Queue = function() {
   };
 
   someInstance.dequeue = function() {
+    if ( length > 0 ) {
+      length--;
+    }
   };
 
   someInstance.size = function() {
