@@ -35,7 +35,7 @@ var LinkedList = function() {
 
     var currentNode = list.head;
 
-    while ( !currentNode.next ) {
+    while ( currentNode.next !== null ) {
 
       if ( currentNode.value === target ) {
         break;
