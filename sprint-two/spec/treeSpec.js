@@ -41,4 +41,21 @@ describe('tree', function() {
     expect(tree.contains(8)).to.equal(true);
   });
 
+  // New tests for ADVANCED SECTIO
+  it('should have a parent property', function(){
+    tree.addChild(1);
+    tree.children[0].addChild(2);
+    expect(tree.children[0].children[0].parent.value).to.equal(1);
+  });
+
+  it('should remove a child from the parents children', function() {
+    tree.addChild(1);
+    tree.children[0].addChild(2);
+    tree.children[0].addChild(3);
+    expect(tree.children[0].numberOfChildren).to.equal(2);
+    tree.children[0].children[0].removeFromParent();
+    expect(tree.children[0].numberOfChildren).to.equal(1);
+  });
+
+
 });
