@@ -57,5 +57,10 @@ describe('tree', function() {
     expect(tree.children[0].numberOfChildren).to.equal(1);
   });
 
+  it('shuold execute callback function on the entire tree', function(){
+    tree.addChild('charlie');
+    tree.children[0].addChild('yifeng');
+    tree.traverse(function(string){console.log(string)});
+  });
 
 });
