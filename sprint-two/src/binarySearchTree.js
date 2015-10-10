@@ -63,6 +63,33 @@ BinarySearchTree.prototype.depthFirstLog = function (cb){
   iterate(this);
 };
 
+BinarySearchTree.prototype.breadthFirstLog = function(cb){
+
+  var initialNodeArray = [this];
+
+  var iterate = function(nodeArray) {
+    var nextLayer = [];
+    for ( var i = 0; i < nodeArray.length; i++) {
+      cb(nodeArray[i].value);
+    }
+
+    for (var i = 0; i < nodeArray.length; i++) {
+      if (nodeArray[i].left) {
+        nextLayer.push(nodeArray[i].left)
+      }
+      if (nodeArray[i].right) {
+        nextLayer.push(nodeArray[i].right);
+      }
+    }
+    if (nextLayer.length > 0) {
+      iterate(nextLayer);
+    }
+  }
+  
+  iterate(initialNodeArray);
+  
+};
+
 /*
  * Complexity: What is the time complexity of the above functions?
   insert: O(log n)
