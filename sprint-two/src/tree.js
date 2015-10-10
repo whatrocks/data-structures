@@ -50,6 +50,15 @@ treeMethods.removeFromParent = function() {
 };
 
 
+treeMethods.traverse = function(cb){
+  _.each(this.children, function(child){
+    cb(child.value);
+    if (child.children) {
+      child.traverse(cb);
+    }
+  });
+}
+
 /*
  * Complexity: What is the time complexity of the above functions?
   addChild: O(1)
