@@ -3,105 +3,91 @@
 var HashTable = function() {
   this._limit = 8;
   this._storage = LimitedArray(this._limit);
-  this._numberOfTuples = 0;
+  this._size = 0;
 };
 
 HashTable.prototype.insert = function(k, v) {
   var index = getIndexBelowMaxForKey(k, this._limit);
-
-  if ( this._storage.get(index) === undefined ){
-    this._storage.set(index, []);
-  }
+  var bucket = this._storage.get(index) || [];
 
   var found = false;
 
-  for ( var i = 0; i < this._storage.get(index).length; i++ ){
-
-    if ( this._storage.get(index)[i][0] === k ) {
+  for ( var i = 0; i < bucket.length; i++ ){
+    if ( bucket[i][0] === k ) {
       found = true;
-      this._storage.get(index)[i][1] = v;
+      bucket[i][1] = v;
     }
   }
 
   if ( !found ) {
-
-    this._numberOfTuples += 1;
-    if ( this._numberOfTuples > (0.75 * this._limit) ) {
-      this.doubleSize(k, v);
-    } else {
       var tuple = [k, v];
-      this._storage.get(index).push(tuple);    
-    }
+      bucket.push(tuple);
+      this._size += 1;
+  }
+
+  this._storage.set(index, bucket);
+  
+  if ( this._size > (0.75 * this._limit) ) {
+    this.doubleSize(k, v);
   }
 
 };
 
 HashTable.prototype.doubleSize = function(k,v) {
-  var oldLength = this._limit;
   this._limit *= 2;
-  this._numberOfTuples = 0;
+  this._size = 0;
   var oldStorage = this._storage;
   this._storage = LimitedArray(this._limit);
-  for ( var i = 0; i < oldLength; i++ ) {
-    for ( var j = 0; j < oldStorage.get(i).length; j++ ){
-      this.insert(oldStorage.get(i)[j][0], oldStorage.get(i)[j][1]);
+  
+  oldStorage.each(function(bucket){
+    bucket = bucket || [];
+    for ( var i = 0; i < bucket.length; i++){
+      this.insert(bucket[i][0], bucket[i][1]);
     }
-  }
+  }.bind(this));
   this.insert(k, v);
 };
 
 
 HashTable.prototype.halveSize = function() {
-  // divide space slots by two
   this._limit = this._limit / 2;
-  // store oldstorage
+  this._size = 0;
   var oldStorage = this._storage;
-  // create a new storage array
   this._storage = LimitedArray(this._limit);
-  // loop thru oldstorage
-  for ( var i = 0; i < oldStorage.length; i++ ){
-    // loop through arrays at each index
-    for ( var j = 0; j < oldStorage[i].length; j++ ){
-      // insert into new guy
-      this.insert(oldStorage[i][j][0], oldStorage[i][j][1]);
+  
+  oldStorage.each(function(bucket){
+    bucket = bucket || [];
+    for ( var i = 0; i < bucket.length; i++){
+      this.insert(bucket[i][0], bucket[i][1]);
     }
-  }
+  }.bind(this));
+
 };
 
 HashTable.prototype.retrieve = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
-  var bucket = this._storage.get(index);
+  var bucket = this._storage.get(index) || [];
   for ( var i = 0; i < bucket.length; i++ ){
     if ( bucket[i][0] === k ) {
       return bucket[i][1];
     }
   }
+  return null;
 };
 
 HashTable.prototype.remove = function(k) {
   var index = getIndexBelowMaxForKey(k, this._limit);
   var bucket = this._storage.get(index);
-  var currentsize = this._limit;
-  var currentStorage = this._storage;
- // debugger;
+
   for ( var i = 0; i < bucket.length; i++ ) {
     if ( bucket[i][0] === k ){
-      this._numberOfTuples--;
-      bucket[i][1] = null;
-      if ( this._numberOfTuples < (0.25 * this._limit) && (this._limit > 8) ) {
-        this.halveSize();
-      } 
-
-
-
-      // // reduce numberOfTuples by 1
-      // this._numberOfTuples--;
-      // // check to see if numberOfTuples is less than 25% of available size
-      // if ( this._numberOfTuples < ( 0.25 * this._limit )) {
-      //   // run halveSize function
-      //   this.halveSize();
-      //}
+      bucket.splice(i,1);
+      this._size--;
+      }
     }
+  
+  if ( this._size < (0.25 * this._limit)) {
+    this.halveSize();
   }
 
 };
@@ -113,6 +99,8 @@ HashTable.prototype.remove = function(k) {
  Insert: Average O(1), Worst O(n)
  Retrieve: Average O(1), Worse O(n)
  Remove: Average O(1), Worse O(n)
+ DoubleSize: O(n)
+ HalveSize: O(n)
 
  */
 
